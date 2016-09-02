@@ -27,8 +27,6 @@ typedef	ushort		Mod;		/* modification number */
 typedef struct Address	Address;
 typedef struct Block	Block;
 typedef struct Buffer	Buffer;
-typedef struct Disc	Disc;
-typedef struct Discdesc	Discdesc;
 typedef struct File	File;
 typedef struct List	List;
 typedef struct Mark	Mark;
@@ -110,20 +108,6 @@ struct Block
 #endif
 };
 
-struct Discdesc
-{
-	int	fd;		/* plan 9 file descriptor of temp file */
-	ulong	nbk;		/* high water mark */
-	List	free;		/* array of free block indices */
-};
-
-struct Disc
-{
-	Discdesc *desc;		/* descriptor of temp file */
-	Posn	nrunes;		/* runes on disc file */
-	List	block;		/* list of used block indices */
-};
-
 struct String
 {
 	short	n;
@@ -131,14 +115,10 @@ struct String
 	Rune	*s;
 };
 
-struct Buffer
-{
-	Disc	*disc;		/* disc storage */
-	Posn	nrunes;		/* total length of buffer */
-	String	cache;		/* in-core storage for efficiency */
-	Posn	c1, c2;		/* cache start and end positions in disc */
-				/* note: if dirty, cache is really c1, c1+cache.n */
-	int	dirty;		/* cache dirty */
+typedef struct Gapbuffer Gapbuffer;
+struct Buffer{
+    Posn nrunes;
+    Gapbuffer *buf;
 };
 
 #define	NGETC	128
@@ -214,19 +194,11 @@ union Hdr
 #define	Fbgetc(f) (((f)->getci<=0)? Fbgetcload(f, (f)->getcp) : (f)->getcbuf[--(f)->getcp, --(f)->getci])
 
 int	alnum(int);
-void	Bclean(Buffer*);
 void	Bterm(Buffer*);
 void	Bdelete(Buffer*, Posn, Posn);
-void	Bflush(Buffer*);
 void	Binsert(Buffer*, String*, Posn);
-Buffer	*Bopen(Discdesc*);
+Buffer	*Bopen(void);
 int	Bread(Buffer*, Rune*, int, Posn);
-void	Dclose(Disc*);
-void	Ddelete(Disc*, Posn, Posn);
-void	Dinsert(Disc*, Rune*, int, Posn);
-Disc	*Dopen(Discdesc*);
-int	Dread(Disc*, Rune*, int, Posn);
-void	Dreplace(Disc*, Posn, Posn, Rune*, int);
 int	Fbgetcload(File*, Posn);
 int	Fbgetcset(File*, Posn);
 long	Fchars(File*, Rune*, Posn, Posn);
@@ -339,7 +311,6 @@ void	warn_S(Warn, String*);
 int	whichmenu(File*);
 void	writef(File*);
 Posn	writeio(File*);
-Discdesc *Dstart(void);
 
 extern Rune	samname[];	/* compiler dependent */
 extern Rune	*left[];

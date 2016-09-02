@@ -37,7 +37,7 @@ CFLAGS=-D_POSIX_C_SOURCE=200809L $(INCS) $(INCLUDES)
 LIB=../libframe/libframe.a ../libXg/libXg.a
 CC?=c99
 
-OBJ=sam.o address.o buffer.o cmd.o disc.o error.o file.o io.o \
+OBJ=sam.o address.o buffer.o cmd.o error.o file.o io.o \
 	list.o mesg.o moveto.o multi.o rasp.o regexp.o shell.o \
 	string.o sys.o unix.o xec.o
 
