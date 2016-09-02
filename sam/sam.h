@@ -25,7 +25,6 @@ typedef long		Posn;		/* file position or address */
 typedef	ushort		Mod;		/* modification number */
 
 typedef struct Address	Address;
-typedef struct Block	Block;
 typedef struct Buffer	Buffer;
 typedef struct File	File;
 typedef struct List	List;
@@ -64,7 +63,6 @@ struct List	/* code depends on a long being able to hold a pointer */
 	int	nused;
 	union{
 		void	*listp;
-		Block	*blkp;
 		long	*longp;
 		uchar*	*ucharp;
 		String*	*stringp;
@@ -74,39 +72,11 @@ struct List	/* code depends on a long being able to hold a pointer */
 };
 
 #define	listptr		g.listp
-#define	blkptr		g.blkp
 #define	longptr		g.longp
 #define	ucharpptr	g.ucharp
 #define	stringpptr	g.stringp
 #define	filepptr	g.filep
 #define	listval		g.listv
-
-/*
- * Block must fit in a long because the list routines manage arrays of
- * blocks.  Two problems: some machines (e.g. Cray) can't pull this off
- * -- on them, use bitfields -- and the ushort bnum limits temp file sizes
- * to about 200 megabytes.  Advantages: small, simple code and small
- * memory overhead.  If you really want to edit huge files, making BLOCKSIZE
- * bigger is the easiest way.
-*
-* The necessary conditions are even stronger:
-*	   sizeof(struct Block)==sizeof(long)
-*	&& the first 32 bits must hold bnum and nrunes.
-* When sizeof(ushort)+sizeof(short) < sizeof(long),
-* add padding at the beginning on a little endian and at
-* the end on a big endian, as shown below for the DEC Alpha.
- */
-struct Block
-{
-#if USE64BITS == 1
-	char	pad[sizeof(long)-sizeof(ushort)-sizeof(short)];
-#endif
-	ushort	bnum;		/* absolute number on disk */
-	short	nrunes;		/* runes stored in this block */
-#if USE64BITS == 2
-	char	pad[sizeof(long)-sizeof(ushort)-sizeof(short)];
-#endif
-};
 
 struct String
 {
