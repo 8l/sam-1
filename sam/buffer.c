@@ -1,7 +1,5 @@
 /* Copyright 2016 Rob King */
 
-#include <assert.h>
-
 #include "sam.h"
 
 #define BUFFER_MIN (65535 * 2)
