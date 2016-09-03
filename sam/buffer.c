@@ -52,15 +52,6 @@ ensuregap(Gapbuffer *b, size_t l)
 }
 
 static void
-insertbuffer(Gapbuffer *b, pos_t p, const char *s, size_t l)
-{
-    movegap(b, p);
-    ensuregap(b, l);
-    memcpy(b->buf + b->gs, s, l);
-    b->gs += l;
-}
-
-static void
 deletebuffer(Gapbuffer *b, pos_t p, size_t l)
 {
     movegap(b, p);
@@ -85,6 +76,15 @@ readbuffer(Gapbuffer *b, pos_t p, size_t l, char *c)
     memcpy(c, b->buf + b->ge, l);
     r += l;
     return r;
+}
+
+static void
+insertbuffer(Gapbuffer *b, pos_t p, const char *s, size_t l)
+{
+    movegap(b, p);
+    ensuregap(b, l);
+    memcpy(b->buf + b->gs, s, l);
+    b->gs += l;
 }
 
 Buffer *
@@ -125,8 +125,8 @@ Bread(Buffer *b, Rune *c, int l, Posn p)
     if (p + l > b->nrunes)
         l = b->nrunes - p;
 
-    int r = (int)(readbuffer(b->buf, p * RUNESIZE, l * RUNESIZE, (char *)c) / RUNESIZE);
-    return r;
+    size_t r = readbuffer(b->buf, p * RUNESIZE, l * RUNESIZE, (char *)c);
+    return (int)(r / RUNESIZE);
 }
 
 void
