@@ -2,8 +2,7 @@
 
 #include "sam.h"
 
-#define BUFFER_MIN (65535 * 2)
-#define GAPSIZE(b) ((b)->ge - (b)->gs)
+#define BUFFER_MIN 65535
 
 typedef size_t pos_t;
 typedef struct Gapbuffer Gapbuffer;
@@ -37,10 +36,10 @@ movegap(Gapbuffer *b, pos_t p)
 static void
 ensuregap(Gapbuffer *b, size_t l)
 {
-    size_t ns = b->size + l + GAPSIZE(b) + BUFFER_MIN;
+    size_t ns = b->size + l + BUFFER_MIN;
     size_t es = b->size - b->ge;
 
-    if (GAPSIZE(b) >= l)
+    if (b->ge - b->gs >= l)
         return;
 
     b->buf = realloc(b->buf, ns);
