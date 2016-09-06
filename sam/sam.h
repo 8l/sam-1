@@ -89,7 +89,7 @@ typedef struct Gapbuffer Gapbuffer;
 struct Buffer
 {
 	Posn	nrunes;		/* total length of buffer */
-    Gapbuffer *buf;
+    Gapbuffer *gb;
 };
 
 #define	NGETC	128
